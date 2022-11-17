@@ -234,7 +234,8 @@ class SparseArray:
         return np.asarray(self.todense(), *args, **kwargs)
 
     def __array_function__(self, func, types, args, kwargs):
-        from . import _common as module
+        import sparse as module
+
         sparse_func = None
         try:
             submodules = getattr(func, "__module__", "numpy").split(".")[1:]

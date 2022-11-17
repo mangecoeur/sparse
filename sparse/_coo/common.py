@@ -16,27 +16,7 @@ from .._utils import (
     check_consistent_fill_value,
     can_store,
 )
-from .._common import (
-    nan_check,
-    check_class_nan,
-    tensordot,
-    matmul,
-    dot,
-    stack,
-    concatenate,
-    eye,
-    full_like,
-    full,
-    zeros,
-    zeros_like,
-    ones,
-    ones_like,
-    outer,
-    asnumpy,
-    moveaxis,
-    pad,
-    format_to_string,
-)
+
 
 def asCOO(x, name="asCOO", check=True):
     """
@@ -273,7 +253,7 @@ def stack(arrays, axis=0):
     )
 
 
-def triu(x, k=0, use_fill_value=True):
+def triu(x, k=0):
     """
     Returns an array with all elements below the k-th diagonal set to zero.
 
@@ -284,8 +264,6 @@ def triu(x, k=0, use_fill_value=True):
     k : int, optional
         The diagonal below which elements are set to zero. The default is
         zero, which corresponds to the main diagonal.
-    use_fill_value : bool, optional
-        Fill using the existing fill_value instead of zero,
 
     Returns
     -------
@@ -302,8 +280,8 @@ def triu(x, k=0, use_fill_value=True):
     numpy.triu : NumPy equivalent function
     """
     from .core import COO
-    if not use_fill_value:
-        check_zero_fill_value(x)
+
+    check_zero_fill_value(x)
 
     if not x.ndim >= 2:
         raise NotImplementedError(
@@ -318,7 +296,7 @@ def triu(x, k=0, use_fill_value=True):
     return COO(coords, data, shape=x.shape, has_duplicates=False, sorted=True)
 
 
-def tril(x, k=0, use_fill_value=True):
+def tril(x, k=0):
     """
     Returns an array with all elements above the k-th diagonal set to zero.
 
@@ -329,8 +307,6 @@ def tril(x, k=0, use_fill_value=True):
     k : int, optional
         The diagonal above which elements are set to zero. The default is
         zero, which corresponds to the main diagonal.
-    use_fill_value : bool, optional
-        Fill using the existing fill_value instead of zero,
 
     Returns
     -------
@@ -348,8 +324,7 @@ def tril(x, k=0, use_fill_value=True):
     """
     from .core import COO
 
-    if not use_fill_value:
-        check_zero_fill_value(x)
+    check_zero_fill_value(x)
 
     if not x.ndim >= 2:
         raise NotImplementedError(
