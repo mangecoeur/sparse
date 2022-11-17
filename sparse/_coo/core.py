@@ -319,6 +319,39 @@ class COO(SparseArray, NDArrayOperatorsMixin):  # lgtm [py/missing-equals]
         self.coords, self.data, self.shape, self.fill_value = state
         self._cache = None
 
+    def __array_function__(self, func, types, args, kwargs):
+        from . import common as module
+        sparse_func = None
+        try:
+            submodules = getattr(func, "__module__", "numpy").split(".")[1:]
+            for submodule in submodules:
+                module = getattr(module, submodule)
+            sparse_func = getattr(module, func.__name__)
+        except AttributeError:
+            pass
+        else:
+            return sparse_func(*args, **kwargs)
+
+        try:
+            sparse_func = getattr(type(self), func.__name__)
+        except AttributeError:
+            pass
+
+        if (
+            not isinstance(sparse_func, Callable)
+            and len(args) == 1
+            and len(kwargs) == 0
+        ):
+            try:
+                return getattr(self, func.__name__)
+            except AttributeError:
+                pass
+
+        if sparse_func is None:
+            return NotImplemented
+
+        return sparse_func(*args, **kwargs)
+
     def __dask_tokenize__(self):
         "Produce a deterministic, content-based hash for dask."
         from dask.base import normalize_token
